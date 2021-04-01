@@ -1,15 +1,22 @@
 <template>
-  <div class="wheel" :style="'--diameter: ' + diameter + 'px'">
-    <div
-      class="wedge"
-      :style="`
-        transform: rotate(${calculateAngle(index)}deg);
-        --radius: ${radius}px;
-        --wedge-perimeter: ${wedgePerimeter}px;
-      `"
-      v-for="index in slots"
-      :key="index"
-    ></div>
+  <div class="container">
+    <div class="wheel" :style="'--diameter: ' + diameter + 'px'">
+      <div
+        class="wedge"
+        :style="`
+          transform: rotate(${wedgeAngle * index}deg);
+          --radius: ${radius}px;
+          --wedge-perimeter: ${wedgePerimeter}px;
+        `"
+        v-for="index in slots"
+        :key="index"
+      ></div>
+    </div>
+    <div class="settings">
+      <label>How many entries?</label>
+      <input class="slots-entry" type="number" v-model="slotsHolder" />
+      <button v-on:click="handleSubmit">Submit</button>
+    </div>
   </div>
 </template>
 
@@ -18,6 +25,7 @@ export default {
   data() {
     return {
       slots: 6,
+      slotsHolder: 6,
       diameter: 800,
     };
   },
@@ -32,17 +40,25 @@ export default {
       const angle = 360 / this.slots / 2;
       return Math.tan((angle * Math.PI) / 180) * this.radius;
     },
+    wedgeAngle() {
+      return 360 / this.slots;
+    },
   },
   methods: {
-    calculateAngle(index) {
-      const deg = 360 / this.slots;
-      return deg * index;
+    handleSubmit() {
+      this.slots = parseInt(this.slotsHolder, 10);
     },
   },
 };
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
 .wheel {
   position: relative;
   margin: 0 auto;
@@ -73,7 +89,11 @@ export default {
   height: 0;
   width: 0;
   margin-top: calc(-1 * var(--wedge-perimeter));
-  border-top: var(--wedge-perimeter)  solid transparent;
+  border-top: var(--wedge-perimeter) solid transparent;
   border-right: var(--radius) solid green;
+}
+.slots-entry {
+  margin-left: 8px;
+  width: 15%;
 }
 </style>
