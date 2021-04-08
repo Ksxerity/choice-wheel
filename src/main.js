@@ -1,5 +1,10 @@
 import Vue from 'vue';
+import JQuery from 'jquery';
 import App from './App.vue';
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+Vue.prototype.$ = JQuery;
 
 Vue.config.productionTip = false;
 
