@@ -103,7 +103,7 @@ export default {
   data() {
     return {
       slots: 6,
-      entries: ['entry1', 'entry2', 'entry3', 'entry4', 'entry5', 'entry6'],
+      entries: ['entry 1', 'entry 2', 'entry 3', 'entry 4', 'entry 5', 'entry 6'],
       pointer: 0,
       rotate: false,
       keyframes: null,
@@ -143,34 +143,38 @@ export default {
   },
   methods: {
     handleAddEntry() {
-      if (this.slots !== this.MAX_SLOTS) {
-        this.entries.push('');
+      if (!this.rotate && this.slots !== this.MAX_SLOTS) {
         this.slots += 1;
+        this.entries.push(`entry ${this.slots}`);
       }
     },
     handleRemoveEntry(index) {
-      if (this.slots === this.MIN_SLOTS) {
-        this.entries.splice(index, 1, '');
-      } else {
-        this.entries.splice(index, 1);
-        this.slots -= 1;
+      if (!this.rotate) {
+        if (this.slots === this.MIN_SLOTS) {
+          this.entries.splice(index, 1, '');
+        } else {
+          this.entries.splice(index, 1);
+          this.slots -= 1;
+        }
+        this.$('#myModal').modal('hide');
       }
-      this.$('#myModal').modal('hide');
     },
     colorController(index) {
       if (this.slots % 2 === 1 && index === this.slots) {
-        return '#f7f3e9';
+        return '#519492';
       }
       return index % 2 === 0 ? '#5eaaa8' : '#a3d2ca';
     },
     rotationController() {
-      const randomSelection = Math.floor(Math.random() * 360);
-      const rotateAmount = this.pointer + randomSelection + 720;
-      this.keyframes.deleteRule('0%');
-      this.keyframes.deleteRule('100%');
-      this.keyframes.appendRule(`0% { transform: rotate(${this.pointer}deg) }`);
-      this.keyframes.appendRule(`100% { transform: rotate(${rotateAmount}deg) }`);
-      this.applyRotation(rotateAmount % 360);
+      if (!this.rotate) {
+        const randomSelection = Math.floor(Math.random() * 360);
+        const rotateAmount = this.pointer + randomSelection + 1440;
+        this.keyframes.deleteRule('0%');
+        this.keyframes.deleteRule('100%');
+        this.keyframes.appendRule(`0% { transform: rotate(${this.pointer}deg) }`);
+        this.keyframes.appendRule(`100% { transform: rotate(${rotateAmount}deg) }`);
+        this.applyRotation(rotateAmount % 360);
+      }
     },
     applyRotation(ptr) {
       this.rotate = true;
@@ -255,7 +259,11 @@ export default {
   font-size: 2em;
   height: var(--label-height);
   margin-top: var(--wedge-offset);
-  margin-left: 300px;
+  margin-left: 200px;
+  width: 190px;
+  white-space: nowrap;
+  text-overflow: clip;
+  overflow: hidden;
 }
 .ticker {
   position: absolute;
