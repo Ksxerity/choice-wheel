@@ -72,34 +72,29 @@
         Add Entry
       </button>
     </div>
-    <div id="myModal" class="modal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-body">
-            <p>
-              Entry chosen was {{ entries[winningEntryIndex] }}. Remove entry?
-            </p>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-danger"
-              v-on:click="handleRemoveEntry(winningEntryIndex)"
-            >
-              Remove
-            </button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal">
-              Keep
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Teleport to="body">
+      <modal
+        :show="showModal"
+        @close="showModal = false"
+        @remove="() => handleRemoveEntry(winningEntryIndex)"
+        >
+        <template #body>
+          <p>
+            Entry chosen was {{ entries[winningEntryIndex] }}
+          </p>
+        </template>
+      </modal>
+    </Teleport>
   </div>
 </template>
 
 <script>
+import Modal from './Modal.vue'
+
 export default {
+  components: {
+    Modal
+  },
   data() {
     return {
       slots: 6,
@@ -108,6 +103,7 @@ export default {
       rotate: false,
       keyframes: null,
       winningEntryIndex: 0,
+      showModal: false
     };
   },
   created() {
@@ -120,10 +116,7 @@ export default {
     this.$nextTick(() => {
       const myRules = document.styleSheets[0].cssRules;
       for (let i = 0; i < myRules.length; i += 1) {
-        if (
-          myRules[i].type === window.CSSRule.KEYFRAMES_RULE ||
-          myRules[i].type === window.CSSRule.WEBKIT_KEYFRAMES_RULE
-        ) {
+        if (myRules[i] instanceof CSSKeyframesRule) {
           this.keyframes = myRules[i];
         }
       }
@@ -156,8 +149,8 @@ export default {
           this.entries.splice(index, 1);
           this.slots -= 1;
         }
-        this.$('#myModal').modal('hide');
       }
+      this.showModal = false;
     },
     colorController(index) {
       if (this.slots % 2 === 1 && index === this.slots) {
@@ -189,7 +182,7 @@ export default {
         if (this.winningEntryIndex === this.slots) {
           this.winningEntryIndex = 0;
         }
-        this.$('#myModal').modal('show');
+        this.showModal = true;
       }, 3000);
     },
   },
