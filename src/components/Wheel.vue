@@ -9,7 +9,8 @@
     >
       <div
         ref="wheel"
-        :class="`wheel ${rotate ? 'spin' : null}`"
+        class="wheel"
+        :style="`${rotate ? rotationTransitionStyle : ''}`"
         v-on:click="rotationController"
       >
         <div
@@ -101,9 +102,10 @@ export default {
       entries: ['entry 1', 'entry 2', 'entry 3', 'entry 4', 'entry 5', 'entry 6'],
       pointer: 0,
       rotate: false,
-      keyframes: null,
       winningEntryIndex: 0,
-      showModal: false
+      showModal: false,
+      rotationTransitionStyle: '',
+      rotationTimingInSeconds: 5
     };
   },
   created() {
@@ -111,16 +113,6 @@ export default {
     this.RADIUS = this.DIAMETER / 2 + 10; // + 10 just for extra pixels to manipulate margin with
     this.MIN_SLOTS = 3;
     this.MAX_SLOTS = 19;
-  },
-  mounted() {
-    this.$nextTick(() => {
-      const myRules = document.styleSheets[0].cssRules;
-      for (let i = 0; i < myRules.length; i += 1) {
-        if (myRules[i] instanceof CSSKeyframesRule) {
-          this.keyframes = myRules[i];
-        }
-      }
-    });
   },
   computed: {
     wedgePerimeter() {
@@ -161,11 +153,8 @@ export default {
     rotationController() {
       if (!this.rotate) {
         const randomSelection = Math.floor(Math.random() * 360);
-        const rotateAmount = this.pointer + randomSelection + 1440;
-        this.keyframes.deleteRule('0%');
-        this.keyframes.deleteRule('100%');
-        this.keyframes.appendRule(`0% { transform: rotate(${this.pointer}deg) }`);
-        this.keyframes.appendRule(`100% { transform: rotate(${rotateAmount}deg) }`);
+        const rotateAmount = this.pointer + randomSelection + 2160;
+        this.rotationTransitionStyle = `transform: rotate(${rotateAmount}deg); transition: transform ${this.rotationTimingInSeconds}s ease-in-out;'`;
         this.applyRotation(rotateAmount % 360);
       }
     },
@@ -183,7 +172,7 @@ export default {
           this.winningEntryIndex = 0;
         }
         this.showModal = true;
-      }, 3000);
+      }, this.rotationTimingInSeconds * 1000);
     },
   },
 };
@@ -202,12 +191,6 @@ export default {
   width: var(--diameter);
   margin-right: 100px;
   min-width: var(--diameter);
-}
-@keyframes rotation {
-}
-.spin {
-  animation: rotation 3s;
-  animation-fill-mode: forwards;
 }
 .wheel {
   transform: rotate(var(--pointer));

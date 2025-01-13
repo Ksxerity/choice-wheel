@@ -1,5 +1,5 @@
-<script setup lang="ts">
-  import Wheel from './components/wheel.vue';
+<script setup>
+  import Wheel from './components/Wheel.vue';
 </script>
 
 <template>
