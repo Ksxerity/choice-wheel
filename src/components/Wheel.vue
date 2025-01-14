@@ -1,77 +1,82 @@
 <template>
   <div class="container">
-    <div
-      class="wheel-container"
-      :style="`
-        --diameter: ${DIAMETER}px;
-        --pointer: ${pointer}deg;
-      `"
-    >
+    <div class="container-header">
+      Choice Picker
+    </div>
+    <div class="container-body">
       <div
-        ref="wheel"
-        class="wheel"
-        :style="`${rotate ? rotationTransitionStyle : ''}`"
-        v-on:click="rotationController"
+        class="wheel-container"
+        :style="`
+          --diameter: ${DIAMETER}px;
+          --pointer: ${pointer}deg;
+        `"
       >
         <div
-          class="wedge"
+          ref="wheel"
+          class="wheel"
+          :style="`${rotate ? rotationTransitionStyle : ''}`"
+          @click="rotationController"
+        >
+          <div
+            class="wedge"
+            :style="`
+              transform: rotate(${wedgeAngle * (index - 1)}deg);
+              border-color: ${colorController(index)};
+              --radius: ${RADIUS}px;
+              --wedge-perimeter: ${wedgePerimeter}px;
+              --wedge-offset: -${wedgePerimeter - 1}px;
+            `"
+            v-for="index in slots"
+            :key="`wedge${index}`"
+          >
+            <label
+              class="wedge-label"
+              :style="`--label-height: ${wedgePerimeter * 2}px`"
+              >{{ entries[index - 1] }}</label
+            >
+          </div>
+        </div>
+        <div class="ticker"></div>
+      </div>
+      <div class="settings">
+        <input
+          type="text"
+          class="entry"
           :style="`
-            transform: rotate(${wedgeAngle * (index - 1)}deg);
-            border-color: transparent ${colorController(
-              index
-            )} transparent transparent;
-            --radius: ${RADIUS}px;
-            --wedge-perimeter: ${wedgePerimeter}px;
-            --wedge-offset: -${wedgePerimeter - 1}px;
+            grid-column-start: 1;
+            grid-row-start: ${index};
+            background-color: white;
           `"
           v-for="index in slots"
-          :key="`wedge${index}`"
+          :key="`entry${index}`"
+          v-model="entries[index - 1]"
+        />
+        <v-btn
+          base-color="#e74c3c"
+          min-width="0px"
+          :style="`
+            grid-column-start: 2;
+            grid-row-start: ${index};
+            padding: 0;
+          `"
+          v-for="index in slots"
+          :key="`remove${index}`"
+          @click="handleRemoveEntry(index - 1)"
         >
-          <label
-            class="wedge-label"
-            :style="`--label-height: ${wedgePerimeter * 2}px`"
-            >{{ entries[index - 1] }}</label
-          >
-        </div>
+          <v-icon icon="mdi-delete-outline" />
+        </v-btn>
+        <v-btn
+          base-color="#38C172"
+          :style="`
+            grid-column-start: 1;
+            grid-column-end: 3;
+            grid-row-start: ${slots + 1}
+          `"
+          @click="handleAddEntry"
+        >
+          <v-icon icon="mdi-plus" />
+        </v-btn>
       </div>
-      <div class="ticker"></div>
-    </div>
-    <div class="settings">
-      <input
-        type="text"
-        class="entry"
-        :style="`
-          grid-column-start: 1;
-          grid-row-start: ${index};
-          background-color: white;
-        `"
-        v-for="index in slots"
-        :key="`entry${index}`"
-        v-model="entries[index - 1]"
-      />
-      <button
-        class="btn btn-danger"
-        :style="`
-          grid-column-start: 2;
-          grid-row-start: ${index}
-        `"
-        v-for="index in slots"
-        :key="`remove${index}`"
-        v-on:click="handleRemoveEntry(index - 1)"
-      >
-        Remove
-      </button>
-      <button
-        class="btn btn-primary"
-        :style="`
-          grid-column-start: 1;
-          grid-column-end: 3;
-          grid-row-start: ${slots + 1}
-        `"
-        v-on:click="handleAddEntry"
-      >
-        Add Entry
-      </button>
     </div>
     <Teleport to="body">
       <modal
@@ -111,14 +116,15 @@ export default {
   created() {
     this.DIAMETER = 800;
     this.RADIUS = this.DIAMETER / 2 + 10; // + 10 just for extra pixels to manipulate margin with
-    this.MIN_SLOTS = 3;
-    this.MAX_SLOTS = 19;
+    this.MIN_SLOTS = 2;
+    this.MAX_SLOTS = 20;
   },
   computed: {
     wedgePerimeter() {
       // Not really calculating the perimeter here. Since we are using triangles to create
       // the wedges, the perimeter is not applicable here. So we have to create a larger
       // triangle that will encompass the whole area of the wedge.
+      if (this.slots === 2) return 410;
       const angle = 360 / this.slots / 2;
       return Math.ceil(Math.tan((angle * Math.PI) / 180) * this.RADIUS);
     },
@@ -145,10 +151,16 @@ export default {
       this.showModal = false;
     },
     colorController(index) {
-      if (this.slots % 2 === 1 && index === this.slots) {
-        return '#519492';
+      if (this.slots === 2) {
+        return index % 2 === 0 ? '#5eaaa8' : '#a3d2ca';
       }
-      return index % 2 === 0 ? '#5eaaa8' : '#a3d2ca';
+      let color = '';
+      if (this.slots % 2 === 1 && index === this.slots) {
+        color = '#519492';
+      } else {
+        color = index % 2 === 0 ? '#5eaaa8' : '#a3d2ca';
+      }
+      return `transparent ${color} transparent transparent`
     },
     rotationController() {
       if (!this.rotate) {
@@ -180,6 +192,19 @@ export default {
 
 <style scoped>
 .container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.container-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 5rem;
+  height: 20vh;
+}
+.container-body {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -257,7 +282,7 @@ export default {
 }
 .settings {
   display: grid;
-  grid-template-columns: 150px 90px;
+  grid-template-columns: 150px 45px;
   grid-template-rows: auto;
   column-gap: 2px;
   row-gap: 2px;
