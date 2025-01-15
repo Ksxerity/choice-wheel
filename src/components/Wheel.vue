@@ -41,7 +41,6 @@
       <div class="settings">
         <input
           type="text"
-          class="entry"
           :style="`
             grid-column-start: 1;
             grid-row-start: ${index};
@@ -67,7 +66,7 @@
           <v-icon color="#e74c3c" icon="mdi-delete-outline" />
         </v-btn>
         <v-btn
-          base-color="#38C172"
+          base-color="#4ab49b"
           :style="`
             grid-column-start: 1;
             grid-column-end: 3;
@@ -213,6 +212,7 @@ export default {
   align-items: center;
   font-size: 5rem;
   margin: 5rem 0;
+  color: #1e3a5f;
 }
 .container-body {
   display: flex;
@@ -297,6 +297,6 @@ export default {
   column-gap: 2px;
   row-gap: 2px;
   padding: 2px;
-  border: 2px solid black;
+  border: 2px solid #1e3a5f;
 }
 </style>

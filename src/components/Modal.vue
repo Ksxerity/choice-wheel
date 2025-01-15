@@ -59,15 +59,11 @@ export default {
   transition: all 0.3s ease;
 }
 
-.modal-header h3 {
-  margin-top: 0;
-  color: #42b983;
-}
-
 .modal-body {
   display: flex;
   justify-content: center;
-  margin: 20px 0;
+  margin-top: 20px;
+  margin-bottom: 30px;
   font-size: 20px;
 }
 
