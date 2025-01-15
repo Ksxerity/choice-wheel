@@ -1,7 +1,8 @@
 <script>
 export default {
   props: {
-    show: Boolean
+    show: Boolean,
+    disableRemove: Boolean
   },
 }
 </script>
@@ -24,6 +25,7 @@ export default {
             <v-btn
               base-color="#e74c3c"
               @click="$emit('remove')"
+              :disabled="disableRemove"
             >
             Remove
             </v-btn>

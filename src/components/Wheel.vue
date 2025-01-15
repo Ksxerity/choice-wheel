@@ -21,7 +21,7 @@
             class="wedge"
             :style="`
               transform: rotate(${wedgeAngle * (index - 1)}deg);
-              border-color: ${colorController(index)};
+              border-color: ${getBorderStyle(index)};
               --radius: ${RADIUS}px;
               --wedge-perimeter: ${wedgePerimeter}px;
               --wedge-offset: -${wedgePerimeter - 1}px;
@@ -45,14 +45,14 @@
           :style="`
             grid-column-start: 1;
             grid-row-start: ${index};
-            background-color: white;
+            background-color: ${colorController(index)};
           `"
           v-for="index in slots"
           :key="`entry${index}`"
           v-model="entries[index - 1]"
         />
         <v-btn
-          base-color="#e74c3c"
+          variant="outlined"
           min-width="0px"
           :style="`
             grid-column-start: 2;
@@ -62,8 +62,9 @@
           v-for="index in slots"
           :key="`remove${index}`"
           @click="handleRemoveEntry(index - 1)"
+          :disabled="this.slots === 2"
         >
-          <v-icon icon="mdi-delete-outline" />
+          <v-icon color="#e74c3c" icon="mdi-delete-outline" />
         </v-btn>
         <v-btn
           base-color="#38C172"
@@ -73,6 +74,7 @@
             grid-row-start: ${slots + 1}
           `"
           @click="handleAddEntry"
+          :disabled="this.slots === 20"
         >
           <v-icon icon="mdi-plus" />
         </v-btn>
@@ -83,6 +85,7 @@
         :show="showModal"
         @close="showModal = false"
         @remove="() => handleRemoveEntry(winningEntryIndex)"
+        :disableRemove="this.slots === 2"
         >
         <template #body>
           <p>
@@ -118,6 +121,9 @@ export default {
     this.RADIUS = this.DIAMETER / 2 + 10; // + 10 just for extra pixels to manipulate margin with
     this.MIN_SLOTS = 2;
     this.MAX_SLOTS = 20;
+    this.COLOR1 = '#d9f0ff';
+    this.COLOR2 = '#a3d5ff';
+    this.COLOR3 = '#83c9f4';
   },
   computed: {
     wedgePerimeter() {
@@ -151,16 +157,20 @@ export default {
       this.showModal = false;
     },
     colorController(index) {
-      if (this.slots === 2) {
-        return index % 2 === 0 ? '#5eaaa8' : '#a3d2ca';
-      }
-      let color = '';
       if (this.slots % 2 === 1 && index === this.slots) {
-        color = '#519492';
+        return this.COLOR3;
       } else {
-        color = index % 2 === 0 ? '#5eaaa8' : '#a3d2ca';
+        return index % 2 === 0 ? this.COLOR1 : this.COLOR2;
       }
-      return `transparent ${color} transparent transparent`
+    },
+    getBorderStyle(index) {
+      const color = this.colorController(index);
+      if (this.slots === 2) {
+        // Not creating triangles in this case so we want all borders to be colored
+        return color;
+      }
+      // For triangles we only want the right border to be colored
+      return `transparent ${color} transparent transparent`;
     },
     rotationController() {
       if (!this.rotate) {
@@ -202,7 +212,7 @@ export default {
   justify-content: center;
   align-items: center;
   font-size: 5rem;
-  height: 20vh;
+  margin: 5rem 0;
 }
 .container-body {
   display: flex;
@@ -286,7 +296,7 @@ export default {
   grid-template-rows: auto;
   column-gap: 2px;
   row-gap: 2px;
+  padding: 2px;
   border: 2px solid black;
-  background-color: gray;
 }
 </style>
