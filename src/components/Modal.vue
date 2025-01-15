@@ -15,18 +15,18 @@ export default {
         </div>
         <div class="modal-footer">
           <slot name="footer">
-            <button
-              class="modal-default-button"
+            <v-btn
+              variant="outlined"
               @click="$emit('close')"
             >
-                Keep
-            </button>
-            <button
-              class="modal-default-button"
+              Keep
+            </v-btn>
+            <v-btn
+              base-color="#e74c3c"
               @click="$emit('remove')"
             >
-                Remove
-            </button>
+            Remove
+            </v-btn>
           </slot>
         </div>
       </div>
@@ -63,12 +63,17 @@ export default {
 }
 
 .modal-body {
+  display: flex;
+  justify-content: center;
   margin: 20px 0;
+  font-size: 20px;
 }
 
-.modal-default-button {
-  float: right;
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
 }
+
 
 /*
  * The following styles are auto-applied to elements with

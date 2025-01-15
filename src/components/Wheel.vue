@@ -86,7 +86,7 @@
         >
         <template #body>
           <p>
-            Entry chosen was {{ entries[winningEntryIndex] }}
+            {{ entries[winningEntryIndex] }}
           </p>
         </template>
       </modal>
@@ -104,7 +104,7 @@ export default {
   data() {
     return {
       slots: 6,
-      entries: ['entry 1', 'entry 2', 'entry 3', 'entry 4', 'entry 5', 'entry 6'],
+      entries: ['Entry 1', 'Entry 2', 'Entry 3', 'Entry 4', 'Entry 5', 'Entry 6'],
       pointer: 0,
       rotate: false,
       winningEntryIndex: 0,
